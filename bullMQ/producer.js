@@ -30,7 +30,7 @@ const addJobs = async () => {
         {
             name: "emailQueue",
             data: {
-                email: "normal@gmail.com",
+                email: "normal@gmail.com", 
                 type: "normal"
             },
             opts: {
@@ -52,56 +52,56 @@ const addJobs = async () => {
                 jobId: "normal",
             }
         },
-        {
-            name: "emailQueue",
-            data: {
-                email: "urgent@gmail.com",
-                type: "urgent"
-            },
-            opts: {
-                removeOnComplete: {
-                    age: 3600,
-                    count: 100
-                },
-                removeOnFail: {
-                    age: 3600,
-                    count: 100
-                },
-                priority: 1,
-                delay: 0,
-                attempts: 5,
-                backoff: {
-                    type: "exponential",
-                    delay: 100
-                },
-                jobId: "urgent"
-            }
-        },
-        {
-            name: "emailQueue",
-            data: {
-                email: "vip@gmail.com",
-                type: "vip"
-            },
-            opts: {
-                removeOnComplete: {
-                    age: 3600,
-                    count: 100
-                },
-                removeOnFail: {
-                    age: 3600,
-                    count: 100
-                },
-                priority: 2,
-                delay: 0,
-                attempts: 5,
-                backoff: {
-                    type: "exponential",
-                    delay: 100
-                },
-                jobId: "vip",
-            }
-        }
+        // {
+        //     name: "emailQueue",
+        //     data: {
+        //         email: "urgent@gmail.com",
+        //         type: "urgent"
+        //     },
+        //     opts: {
+        //         removeOnComplete: {
+        //             age: 3600,
+        //             count: 100
+        //         },
+        //         removeOnFail: {
+        //             age: 3600,
+        //             count: 100
+        //         },
+        //         priority: 1,
+        //         delay: 0,
+        //         attempts: 5,
+        //         backoff: {
+        //             type: "exponential",
+        //             delay: 100
+        //         },
+        //         jobId: "urgent"
+        //     }
+        // },
+        // {
+        //     name: "emailQueue",
+        //     data: {
+        //         email: "vip@gmail.com",
+        //         type: "vip"
+        //     },
+        //     opts: {
+        //         removeOnComplete: {
+        //             age: 3600,
+        //             count: 100
+        //         },
+        //         removeOnFail: {
+        //             age: 3600,
+        //             count: 100
+        //         },
+        //         priority: 2,
+        //         delay: 0,
+        //         attempts: 5,
+        //         backoff: {
+        //             type: "exponential",
+        //             delay: 100
+        //         },
+        //         jobId: "vip",
+        //     }
+        // }
     ])
     console.log("Job Added");
 

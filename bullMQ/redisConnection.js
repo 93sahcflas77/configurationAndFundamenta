@@ -12,4 +12,12 @@ const queueEventConnection = new Redis({
     maxRetriesPerRequest: null
 })
 
-module.exports = { queueConnection, workerConnection, queueEventConnection }
+const flowproducerConnection = new Redis({
+    maxRetriesPerRequest: null
+})
+
+const jobschedulerConection = new Redis({
+    maxRetriesPerRequest: null
+})
+
+module.exports = { queueConnection, workerConnection, queueEventConnection, flowproducerConnection, jobschedulerConection }

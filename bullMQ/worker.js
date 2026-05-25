@@ -1,30 +1,135 @@
 const { Worker } = require("bullmq");
 const { workerConnection } = require("./redisConnection");
-const { pause } = require("./queue");
+const queue = require("./queue");
 
 const worker = new Worker("emailQueue",
     async job => {
-        console.log("Processing:", job.data);  // Actual payload.
-        console.log(job.id);  // Unique job identifier. 
-        console.log(job.name);  // Job type.
+        // console.log(job.id);  // Unique job identifier. 
+        // console.log(job.name);  // Job type.
         // job.data.email = "a@gmail.com"  // Update:data
-        console.log(job.opts);  // Job options.
-        console.log(job.queueName); // Queue owner.
-        console.log(job.timestamp); // Creation time.
-        console.log(job.processedOn); // Start time.
-        console.log(job.finishedOn); // Finish time.
-        console.log(job.progress); // Progress value.
-        console.log(job.attemptsMade); // Retry count.
-        console.log(job.delay); // Delay job
-        console.log(job.failedReason); // Failure cause.
-        console.log(job.returnvalue); // Worker result.
+        // console.log(job.opts);  // Job options.
+        // console.log(job.queueName); // Queue owner.
+        // console.log(job.timestamp); // Creation time.
+        // console.log(job.processedOn); // Start time.
+        // console.log(job.finishedOn); // Finish time.
+        // console.log(job.progress); // Progress value.
+        // console.log(job.attemptsMade); // Retry count.
+        // console.log(job.delay); // Delay job
+        // console.log(job.failedReason); // Failure cause.
+        // console.log(job.returnvalue); // Worker result.
+
+        // Change payload.
+        // await job.updateData({
+        //     email: "chandan7073251686@gmail.com"
+        // })
+
+
+        // Update progress.
+        // await job.updateProgress("20");
+        // await job.updateProgress("100");
+        // console.log(job.progress); // Progress value.
+
+        // await job.updateProgress("10");
+        // console.log("Processing...   10%");
+        // await job.updateProgress("50");
+        // console.log("Processing...   50%");
+        // await job.updateProgress("100");
+
+
+        // log():- Add logs.
+        // await job.log("started");
+        // const logs = await queue.getJobLogs(job.id);
+        // console.log(logs);
+
+
+        // remove
+        // await job.remove();
+        // console.log("delete a job");
+
+
+        // retry
+        // await job.retry("failed")   // Retry failed job.
+
+
+        // discard
+        // await job.discard()   //Disable retries.
+
+
+        // promote
+        // await job.promote()   // Move delayed → waiting. 
+
+
+        // changeDelay
+        // await job.changeDelay(3000);    //Update delay.
+
+
+        // moveToCompleted
+        // await job.moveToCompleted("done", job.token)  // Force complete.
+        
+
+        // moveToFailed
+        // await job.moveToFailed(new Error(). job.token);  // Force fail.
+
+
+        // moveToDelayed
+        // await job.moveToDelayed(Date.now()+5000, job.token);   // Move to delayed.
+
+
+
+        // extendLock
+        // await job.extendLock(job.token, 30000);    // Extend processing lock.
+
+
+
+        // getState 
+        const state = await job.getState();   //Read status. [waiting]
+        console.log(`job status: ${state}`);
+
+
+        // await job.isCompleted();
+        // await job.isFailed();
+        // await job.isDelayed();
+        // await job.isWaiting();
+        // await job.isActive();
+
+
+        // waitUntilFinished
+    //    const result =  await job.waitUntilFinished();   // Wait for result.
+        // console.log(result);
+       
+        // return {
+        //     ok: true
+        // }
 
 
         await new Promise(resolve => {
             setTimeout(resolve, 5000)
         })
 
+        console.log("Processing:", job.data);  // Actual payload.
+
         console.log(`Done`);
+
+        
+        
+        // Parent Job Access
+        const parent = await job.getParent();
+        console.log(parent);
+
+        // getChildrenValues()   Read child results.
+        const values = await job.getChildrenValues();
+        console.log(values);
+
+        // getDependencies()  Read dependencies.
+        const dep = await job.getDependencies();
+        console.log(dep); 
+
+        // removeDependency()  Remove one child.
+        await job.removeDependency(childKey)
+
+        // moveToWaitingChildren()   Move parent.    parent  -> wait children
+        await job.moveToWaitingChildren(job.token)
+
     },
     {
         // connection:{
