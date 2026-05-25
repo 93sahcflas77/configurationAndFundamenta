@@ -1,0 +1,12 @@
+doctype html 
+html
+  head 
+    title= title
+    link(rel="stylesheet", href="/style.css")
+  body 
+    h1 Welcome #{user}
+    h2 Product 
+    ul 
+      each product in products
+        li= product
+    script(src="/index.js")

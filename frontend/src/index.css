@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+
+h2 {
+    @apply bg-amber-300;
+}

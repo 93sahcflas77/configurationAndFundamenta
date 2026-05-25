@@ -1,0 +1,19 @@
+body {
+  font-family: Arial;
+  padding: 40px;
+}
+
+h1 {
+  color: blue;
+}
+
+nav a {
+  margin-right: 20px;
+}
+
+p{
+  text-align: center;
+  background-color: aquamarine;
+  font-size: 15px;
+  padding: 5px;
+}

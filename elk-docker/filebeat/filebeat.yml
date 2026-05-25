@@ -1,0 +1,8 @@
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /home/tony/backend/logs/combined.log
+
+output.logstash:
+  hosts: ["logstash:5044"]

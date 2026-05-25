@@ -1,0 +1,22 @@
+{
+  "name": "bullmq",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "dev": "concurrently \"nodemon server.js\" \"nodemon producer.js\" \"nodemon worker.js\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@bull-board/api": "^7.0.0",
+    "@bull-board/express": "^7.0.0",
+    "bullmq": "^5.76.8",
+    "concurrently": "^9.2.1",
+    "express": "^5.2.1",
+    "ioredis": "^5.10.1",
+    "nodemon": "^3.1.14"
+  }
+}
