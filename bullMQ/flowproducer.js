@@ -2,7 +2,7 @@ const { FlowProducer } = require("bullmq");
 const { flowproducerConnection } = require("./redisConnection");
 
 // Constructor
-const flow = new FlowProducer({
+const flow = new FlowProducer({                                         // connect to redis server
     flowproducerConnection
 })
 
@@ -27,12 +27,21 @@ async function create() {
             {
                 name: "users",
                 queueName: "emailQueue",
-                data: {}
+                data: {},
+                opts: {
+
+                }
             },
             {
                 name: "order",
                 queueName: "emailQueue",
-                data: {}
+                data: {},
+                opts: {
+                    failParentOnFailure: true,
+                    continueParentOnFailure: true,
+                    removeDependencyOnFailure: true,
+                    ignoreDependencyOnFailure: true
+                }
             }
         ]
     })
@@ -90,6 +99,13 @@ async function create() {
 create()
 
 // Flow: users, orders ---> parent..
+
+flow.getFlow({
+    id: "root-job-id",
+    queueName: "root queue",
+    depth: "limit recovery",
+    maxChildren: "limit childern count"
+}); 
 
 
 

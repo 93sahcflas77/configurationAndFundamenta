@@ -1,136 +1,39 @@
 const { QueueEvents } = require("bullmq");
 const { queueEventConnection } = require("./redisConnection")
 
-const events = new QueueEvents("emailQueue", {
+const events = new QueueEvents("emailQueue", {                          // connect to redis server
     connection: queueEventConnection
 });
 
 
 // QueueEvents Properties
-console.log(events.name);   // Queue name.
-console.log(events.opts); // Configuration.
-console.log(events.running);  // Current state.
-console.log(events.client);   // Redis connection.
+const evenetName = events.name;                                         // Queue name.
+const eventOption = events.opts;                                        // Configuration.
+const eventRunning = events.running;                                    // Current state.
+const eventClient = events.client;                                      // Redis connection.
 
 
 // QueueEvents Methods
+await events.waitUntilReady();                                          // Wait for Redis.
+await events.close();                                                   // Gracefully close. connected  ->  close
+await events.disconnect()                                               // Force disconnect.
 
 
-async function met(){
-
-    // waitUntilReady
-    await events.waitUntilReady();   // Wait for Redis.
-    console.log("Ready");
-
-    // close()
-    await events.close();   // Gracefully close. connected  ->  close
- 
-    // disconnect()
-    await events.disconnect()  // Force disconnect.
-
-}
-
-met()
-
-// Listen continuously.  output:- every completion
-events.on(
-    // "failed",
-    "completed",
-
-    ({ jobId }) => {
-
-        console.log(
-            "Done:",
-            jobId
-        );
-
-    }
-
-);
-
-// Listen once.
-events.once("completed", ({jobId}) => {
-    console.log(jobId)
-})
-
-
-//  Remove listener.
-events.off("completed", () => {
-    console.log("remove listener")
-})
-
-
-// emit()   Manual event.
+events.on("completed", ({ jobId }) => {} );
+events.once("completed", ({jobId}) => {} );
+events.off("completed", () => {} );
 events.emit("completed", "hello");
-
-
-// removeAllListeners()   Remove listeners.
 events.removeAllListeners();
-
-
-// completed   Triggered after success.
-events.on("completed", ({jobId, returnvalue}) => {
-    console.log(`jodID: ${jobId} and retuen value: ${returnvalue}`)
-})
-
-
-// failed  Triggered after failure.
-events.on("failed", ({jobId, failedReason}) => {
-    console.log(failedReason);
-})
-
-
-// active   Job started.
-events.on("active", ({jobId, prev}) => {
-    console.log(`job id: ${jobId} and pre job: ${prev}`)
-})
-
-
-// waiting  Waiting queue.
-events.on("waiting", ({jobId, prev}) => {
-    console.log(`job id: ${jobId} and pre job: ${prev}`)
-})
-
-
-// delayed   Delayed.
-events.on("delayed", ({jobId, delay}) => {
-    console.log(`job id: ${jobId} and delay job: ${delay}`)
-})
-
-
-// progress  Progress updates.
-events.on("progress", ({jobId, data}) => {
-    console.log(`job id: ${jobId} and job data: ${delay}`)
-})
-
-
-// paused
-events.on("paused", () => {
-    console.log("paused")
-})
-
-
-// resumed
-events.on("resumed", () => {
-    console.log("resumed")
-})
-
-
-// removed   Job removed.
-events.on("removed", ({jobId, prev}) => {
-    console.log(`job id: ${jobId} and remov job: ${prev}`)
-})
-
-
-// drained   Queue empty.
-events.on("drained", ({}) => {
-    console.log("empty");
-})
-
-
-// cleaned   Cleanup finished.
-events.on("cleaned", ({count}) => {
-    console.log(`clean count: ${count}`);
-})
+events.on("completed", ({jobId, returnvalue}) => {} )                   // completed   Triggered after success.              
+events.on("failed", ({jobId, failedReason}) => {} )                     // failed  Triggered after failure.
+events.on("active", ({jobId, prev}) => {} )                             // active   Job started.
+events.on("waiting", ({jobId, prev}) => {} )                            // waiting  Waiting queue.
+events.on("delayed", ({jobId, delay}) => {} )                           // delayed   Delayed.
+events.on("progress", ({jobId, data}) => {} )                           // progress  Progress updates.
+events.on("paused", () => {} )                                          // paused
+events.on("resumed", () => {} )                                         // resumed
+events.on("removed", ({jobId, prev}) => {} )                            // removed   Job removed.
+events.on("drained", ({}) => {} )                                       // drained   Queue empty.
+events.on("cleaned", ({count}) => {} )                                  // // cleaned   Cleanup finished.
 
 
