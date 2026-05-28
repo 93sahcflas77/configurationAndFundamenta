@@ -55,7 +55,7 @@ const worker = new Worker(
         await job.removeChildDependency();                          // Removes child dependency from parent when child is not yet finished
         await job.moveToWaitingChildren();                          // Token to check job is locked by current worker
 
-        await new Promise(resolve => {
+        new Promise(resolve => {
             setTimeout(resolve, 5000)
         })
 
@@ -90,13 +90,17 @@ const worker = new Worker(
         skipStalledCheck: false,                                    // Disable stalled detection.  default value false detect crashes  -> recover jobs  value true crashed job -> lost forever
         metrics: {                                                  // Collect Worker metrics.
         maxDataPoints: 500
+        },
+        limiter: {
+            max: 100,
+            duration: 6000
         }
 
     }
 )
 
 // Worker Properties
-const workerNaame = (worker.name);                                  // Worker name.
+const workerNaame = worker.name;                                  // Worker name.
 const workerPotions = worker.opts;                                  // Worker options.
 const workerId = worker.id;                                         // Worker identifier.
 const waorkerConcurrency = worker.concurrency;                      // Number of parallel jobs.

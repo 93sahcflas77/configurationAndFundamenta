@@ -8,6 +8,21 @@ const queue = new Queue("emailQueue",
             port: 6379
         },
         connection: queueConnection,
+        defaultJobOptions: {
+            removeOnComplete: {
+                age: 3600,
+                count: 100
+            },
+            removeOnFail: {
+                age: 24 * 3600
+            },
+            attempts: 3,
+            delay: 0,
+            backoff: {
+                type: "exponential",
+                delay: 1000
+            }
+        }
     }
 )
 

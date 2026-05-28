@@ -39,6 +39,14 @@ const jobschedulerConection = new Redis({
     maxRetriesPerRequest: null
 })
 
+redisConfig.on("connect", () => {
+    console.log("Redis Connect")
+})
+
+redisConfig.on("error", () => {
+    console.log("Redis Error:", err.message);
+})
+
 module.exports = { 
     queueConnection, 
     workerConnection, 

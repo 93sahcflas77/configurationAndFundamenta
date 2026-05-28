@@ -25,8 +25,9 @@ await scheduler.upsertJobScheduler(                                     // Creat
         immediately: true
     },
     {
-        name: "sendEmail",                                              // this are same to queue data add
-        data: {
+        name: "sendEmail",                                              
+        queueName: "EmailQueue",
+        data: {                                                         // this are same to queue data add
             email: "chandan7073251686@gmail.com"
         },
         opts: {                                                         // this are same to queue ptions                         

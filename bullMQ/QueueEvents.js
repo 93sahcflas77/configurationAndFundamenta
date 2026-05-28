@@ -1,3 +1,13 @@
+// QueueEvents in BullMQ is mainly used in production to:
+
+// Monitor queue activity globally
+// Build real-time dashboards
+// Send logs/alerts
+// Trigger notifications
+// Track job lifecycle
+// Audit queue processing
+// Update UI/WebSocket clients
+// Handle failures centrally
 const { QueueEvents } = require("bullmq");
 const { queueEventConnection } = require("./redisConnection")
 

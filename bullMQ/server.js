@@ -1,6 +1,5 @@
 const express = require("express");
 const serverAdapter = require("./BullMQUI");
-const queue = require("./queue")
 
 const app = express();
 
