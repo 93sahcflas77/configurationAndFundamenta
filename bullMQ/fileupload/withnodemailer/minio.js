@@ -6,6 +6,8 @@ const client = new Minio.Client({
   useSSL: process.env.MINIO_USESSL === true,
   accessKey: process.env.MINIO_ACCESSKEY,
   secretKey: process.env.MINIO_SECRETKEY,
+  region: "ap-south-1",
+  
 });
 
 const checkconnection = async () => {
