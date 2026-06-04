@@ -79,43 +79,106 @@ mongoose.set("maxTimeMS", 10000);                                         // Set
 await mongoose.disconnect();                                               // Disconnect from MongoDB  Return value: Promise<void>
 await mongoose.createConnection(uri, options);                             // sepatre a url creates a completely separate connection object.  Create a new connection to MongoDB using the given URI and options  Return value: Connection  other same as connrct()
 
-// MODELS
-await mongoose.model(name);                                               // Retrieve a model by name.  Return value: Model
-await mongoose.model(name, schema);                                       // Compile a model from a schema.  Return value: Model
-const User = mongoose.model('User', userSchema); 
-User.modelName;                                                           // The name of the model.  Return value: string
-User.collection.name;                                                     // The name of the collection the model uses.  Return value: string
-User.db;                                                                  // The database the model uses.  Return value: Db
-User.base;                                                                // The base Mongoose instance the model uses.  Return value: Mongoose
-User.schema;                                                              // The schema the model uses.  Return value: Schema
-User.prototype;                                                           // The prototype of the model.  Return value: object
-await mongoose.model(name, schema, collection);                           // Compile a model from a schema and specify the collection name.  Return value: Model
-// collectionName:- Custom Collection Name 
-await mongoose.modelNames();                                              // Return an array of model names created on this connection.  Return value: string[]
-await mongoose.deleteModel(modelName);                                    // Delete a model from Mongoose.  Return value: void
-
-await mongoose.pluralize();                                               // Get the current pluralization function.  Return value: Function
-await mongoose.pluralize(null);                                           // Disable automatic pluralization of collection names.  Return value: void
-await mongoose.pluralize(function (name) { return name + 's'; });         // Set a custom pluralization function.  Return value: void
-
-
-await mongoose.startSession();                                            // Start a new session.  Return value: Promise<ClientSession>
-const session = await mongoose.startSession();                            // Start a new session.  Return value: Promise<ClientSession>
-// properties on session
-session.id;                                                               // The session ID.  Return value: ObjectId
-session.client;                                                           // The MongoClient this session belongs to.  Return value: MongoClient
-session.hasEnded;                                                         // Whether this session has ended.  Return value: boolean
-// methods on session
-session.startTransaction();                                               // Start a transaction on this session.  Return value: Promise<void>
-session.commitTransaction();                                              // Commit the transaction on this session.  Return value: Promise<void>
-session.abortTransaction();                                               // Abort the transaction on this session.  Return value: Promise<void>
-session.endSession();                                                     // End this session.  Return value: void
-session.withTransaction(async () => {} );                                 // Execute the given function in a transaction.  Return value: Promise<void>
-await mongoose.connection.transaction(async (session) => {} );            // Execute the given function in a transaction.  Return value: Promise<void>
-
-
 await mongoose.Schema({});                                                 // Create a new schema.  Return value: Schema
-const schema = new mongoose.Schema({});
+const schema = new mongoose.Schema(
+    {
+        str: {
+            type: String,
+            required: true,
+            trim: true,
+            lowerCase: true,
+            upperCase: true,
+            minlength: 3,
+            maxlength: 50,
+            match:"/regex/",
+            enum: ["admin", "user"],
+            default: "guest",
+            unique: true,
+            index: true,
+            spare: true,                                                   // Ignore null value i index
+            select: true,
+            immulable: true,                                               // cannot be change after creation
+            validate: {
+                validation: function (v){
+                    return v.startsWith("user_")
+                },
+                message: "Must start with user_"
+            },
+            alias: "name",
+            set: v => v.trim().toLowerCase(),
+            get: v => v.toUpperCase(),
+            populate: {                                                    // Used with objectId
+                ref: "user"
+            }
+        },
+        num: {
+            type: Number,
+            min: 0,
+            max: 1,
+            default: 5,
+            required: true,
+            ...orherStringOptionAdd
+        },
+        bool: {
+            type: Boolean,
+            default: true,
+            enum: [true, false, 1, 0],
+            ...orherStringOptionAdd
+        },
+        dat: {
+            type: Date,
+            min: "2024-10-1",
+            max: "20250-5-01",
+            ...orherStringOptionAdd
+        },
+        Buffer: {
+            type: Buffer
+        },
+        Object: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        Arr: {
+            type: Array,
+            type: [mongoose.Schema.Types.String],
+            type: [mongoose.Schema.Types.Mixed]
+        },
+        Mixed: {
+            type: mongoose.Schema.Types.Mixed
+        },
+        Decimal: {
+            type: mongoose.Schema.Types.Decimal128
+        },
+        Map: {                                                            // Dynamic key-value pairs.
+            type: Map,
+            of: String
+        },
+        uuid: {
+            type: mongoose.Schema.Types.UUID
+        },
+        BigInt: {
+
+            type: BigInt
+        }
+    },
+    {
+        timestamps: true,                                                  // Automatically creates:
+        strict: true,                                                      // Controls unknown fields.
+        collection: "employees",                                           // Specify collection manually.
+        versionKey: false,                                                 // __v disable
+        minimize: true,                                                    // Controls empty object removal.
+        autoIndex: false,                                                  // Automatically build indexes.
+        id: true,                                                          // Virtual string version of _id.
+        toJSON: {virtuals: true},                                          // Controls JSON conversion.
+        toObject:{virtuals: true},                                         // Controls object conversion.,
+        discriminatorKey: "role",                                          // Used by discriminators.
+        capped: {size: 1024},                                              // Creates capped collection. MongoDB automatically limits collection size.
+        shardKey: {tenantId: 1},                                           // For MongoDB sharding.  Used in large-scale clusters.
+        validateBeforeSave: false,                                         // validate Before Save
+        optimisticConcurrency: true,                                       //  optimisticConcurrency Prevents overwriting changes accidentally.
+        strictQuery: true                                                  // Controls query filtering. Unknown query fields ignored.
+    }
+);
 schema.obj;                                                                // Returns the original schema definition object.  Return value: object
 schema.paths;                                                              // An object containing all schema paths.  Return value: { [path: string]: SchemaType }
 schema.paths.age;                                                          // Get a specific schema path.  Return value: SchemaType
@@ -151,4 +214,154 @@ schema.query.byName = function(name) {                                      // D
 };
 
 // SCHEMA METHODS
-schema.add(path, type);                                                     // Add a path to the schema.  Return value: void Ex:- schema.add({ age: Number });
+schema.add(Object);                                                         // Add a path to the schema.  Return value: void Ex:- schema.add({ age: Number });
+// EX:- 
+schema.add({name: String, age: Number, address: {city: String}});           // schema add a new field add a string number boolean
+schema.add({skills: [String], profile: [                                    // schema add a new field add a array
+    {name: String, url: String}
+], address: addresSchema
+})                  
+
+schema.path("name");                                                        // Get information about a schema field
+const namePath = schema.path("name");                                       // amePath all properties and method
+namePath.instance                                                           // return type name
+namePath.path;                                                              // return filed name 
+namePath.options;                                                           // return field configuration
+namePath.validators;                                                        // return validation
+namePath.defaultValue;                                                      // return a default value
+namePath.isRequired;                                                        // return a required value true.false
+namePath.path("age").validate(                                              // Dynamic Validator Addition
+    value => value + 10, "Age must br 19"
+)
+namePath.enumValues                                                         // Enum Inspection
+// string schema type method
+const stringPath = namePath.path("name")
+stringPath.enum();
+stringPath.match();
+stringPath.minlength();
+stringPath.maxlength();
+stringPath.trim();
+stringPath.lowerCase();
+stringPath.upperCase();
+// number schema type method
+const numberPath = namePath.path("age");
+numberPath.min();
+numberPath.max();
+// Date schema type method
+const datePath = schema.path("createAT");
+datePath.min();
+datePath.max();
+
+schema.remove([path])                                                             // Is deprecated/removed. Historically, it was used to remove paths (fields) from a schema definition.
+schema.remove(["age", "email"])                                                   // syntax eample
+
+schema.clone()                                                                    // create  deeps copies os a mongoose schema   -- Return:- schema
+
+schema.pick(paths)                                                                // creates a new Schema that contains only the specified paths (fields) from an existing schema. It does not modify the original schema.
+schema.pick(["name", "age"])                                                      // syntax example
+
+schema.omit(paths);                                                               // creates a new schema by removing specified fields from an existing schema. It is the opposite of schema.pick().
+schema.omit(["name", "age", "passwprd"])                                          // suntax example
+
+schema.eachPath((path, schemaType) => {                                           //is a Schema method that iterates over every path (field) defined in a schema.
+    type.path
+    type.instance
+    type.options
+    type.validators
+    type.defaultValue
+});     
+
+schema.set(optionsName, value);                                                   // is used to get or set schema options after a schema has been created.
+optionsName = {
+    timestamps: true,                                                             // Automatically creates:
+    strict: true,                                                                 // Controls unknown fields.
+    collection: "employees",                                                      // Specify collection manually.
+    versionKey: false,                                                            // __v disable
+    minimize: true,                                                               // Controls empty object removal.
+    autoIndex: false,                                                             // Automatically build indexes.
+    id: true,                                                                     // Virtual string version of _id.
+    toJSON: {virtuals: true},                                                     // Controls JSON conversion.
+    toObject:{virtuals: true},                                                    // Controls object conversion.,
+    discriminatorKey: "role",                                                     // Used by discriminators.
+    capped: {size: 1024},                                                         // Creates capped collection. MongoDB automatically limits collection size.
+    shardKey: {tenantId: 1},                                                      // For MongoDB sharding.  Used in large-scale clusters.
+    validateBeforeSave: false,                                                    // validate Before Save
+    optimisticConcurrency: true,                                                  //  optimisticConcurrency Prevents overwriting changes accidentally.
+    strictQuery: true                                                             // Controls query filtering. Unknown query fields ignored.
+}
+schema.set(optionName, value)                                                     // Using Multiple
+       .set(optionName, value)
+       .set(optionName, value)
+
+schema.get(optionName);                                                           // is used to retrieve (read) schema options from a Mongoose Schema.
+
+
+// MODELS
+await mongoose.model(name);                                               // Retrieve a model by name.  Return value: Model
+await mongoose.model(name, schema);                                       // Compile a model from a schema.  Return value: Model                                                          // The prototype of the model.  Return value: object
+await mongoose.model(name, schema, collection);                           // Compile a model from a schema and specify the collection name.  Return value: Model
+// collectionName:- Custom Collection Name 
+await mongoose.modelNames();                                              // Return an array of model names created on this connection.  Return value: string[]
+await mongoose.deleteModel(modelName);                                    // Delete a model from Mongoose.  Return value: void
+
+await mongoose.pluralize();                                               // Get the current pluralization function.  Return value: Function
+await mongoose.pluralize(null);                                           // Disable automatic pluralization of collection names.  Return value: void
+await mongoose.pluralize(function (name) { return name + 's'; });         // Set a custom pluralization function.  Return value: void
+
+const User = mongoose.model('User', userSchema); 
+User.modelName;                                                           // The name of the model.  Return value: string
+User.collection.name;                                                     // The name of the collection the model uses.  Return value: string
+User.db;                                                                  // The database the model uses.  Return value: Db
+User.base;                                                                // The base Mongoose instance the model uses.  Return value: Mongoose
+User.schema;                                                              // The schema the model uses.  Return value: Schema
+User.prototype; 
+User.schema;
+User.modelName;
+
+
+// Mongoose
+//    │
+//    └── Model (User)
+//             │
+//             ├── Create Operations
+//             ├── Read Operations
+//             ├── Update Operations
+//             ├── Delete Operations
+//             ├── Aggregate Operations
+//             ├── Bulk Operations
+//             ├── Index Operations
+//             ├── Transaction Operations
+//             └── Utility Operations
+
+// METHOD           
+User.create(doc, options);                                                         // Create one or multiple documents.
+User.craete([doc1, doc2], options);                                                // doc:- Array/Object | optios:- Object
+options = {
+    session,                                                                       // already know
+    validateBeforeSave,                                                            // Controls schema validation before saving. default: true and false Use Case Rarely used.  Mostly:  Data migration Import scripts Legacy databases       
+    ordered,                                                                       // Only applies when inserting multiple documents.  (Mongoose create() behaves differently than insertMany, but supports ordered processing)
+    aggregateErrors                                                                // Only works with: orderes: false default value:- false -> Returns first error only. true -> Returns combined errors.
+}
+
+
+
+
+
+
+
+
+
+
+await mongoose.startSession();                                            // Start a new session.  Return value: Promise<ClientSession>
+const session = await mongoose.startSession();                            // Start a new session.  Return value: Promise<ClientSession>
+// properties on session
+session.id;                                                               // The session ID.  Return value: ObjectId
+session.client;                                                           // The MongoClient this session belongs to.  Return value: MongoClient
+session.hasEnded;                                                         // Whether this session has ended.  Return value: boolean
+// methods on session
+session.startTransaction();                                               // Start a transaction on this session.  Return value: Promise<void>
+session.commitTransaction();                                              // Commit the transaction on this session.  Return value: Promise<void>
+session.abortTransaction();                                               // Abort the transaction on this session.  Return value: Promise<void>
+session.endSession();                                                     // End this session.  Return value: void
+session.withTransaction(async () => {} );                                 // Execute the given function in a transaction.  Return value: Promise<void>
+await mongoose.connection.transaction(async (session) => {} );            // Execute the given function in a transaction.  Return value: Promise<void>
