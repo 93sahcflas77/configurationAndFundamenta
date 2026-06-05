@@ -333,17 +333,78 @@ User.modelName;
 //             ├── Transaction Operations
 //             └── Utility Operations
 
-// METHOD           
+// METHOD    
+
 User.create(doc, options);                                                         // Create one or multiple documents.
 User.craete([doc1, doc2], options);                                                // doc:- Array/Object | optios:- Object
 options = {
     session,                                                                       // already know
     validateBeforeSave,                                                            // Controls schema validation before saving. default: true and false Use Case Rarely used.  Mostly:  Data migration Import scripts Legacy databases       
-    ordered,                                                                       // Only applies when inserting multiple documents.  (Mongoose create() behaves differently than insertMany, but supports ordered processing)
-    aggregateErrors                                                                // Only works with: orderes: false default value:- false -> Returns first error only. true -> Returns combined errors.
+    ordered: true,                                                                 // Only applies when inserting multiple documents.  (Mongoose create() behaves differently than insertMany, but supports ordered processing)
+    aggregateErrors: false                                                         // Only works with: orderes: false default value:- false -> Returns first error only. true -> Returns combined errors.
 }
 
+User.insertMany(docs, options);                                                    // doc:- Array<Object> Insert multiple documents into the database.  Return value: Promise<Document[]>
+options = {
+    session,                                                                       // already know
+    validateBeforeSave,                                                            // Controls schema validation before saving. default: true and false Use Case Rarely used.  Mostly:  Data migration Import scripts Legacy databases       
+    ordered: true,                                                                 // Only applies when inserting multiple documents.  (Mongoose create() behaves differently than insertMany, but supports ordered processing)
+    aggregateErrors: false,                                                        // Only works with: orderes: false default value:- false -> Returns first error only. true -> Returns combined errors.
+    rawResult: true,                                                               // If true, returns the raw result from the MongoDB driver.  Default: false
+    lean: false,                                                                   // If true, returns plain JavaScript objects instead of Mongoose documents.  Default: false
+    limit: null,                                                                   // Only inserts the specified number of documents.  Default: no limit
+    populate: false                                                                // If true, populates the document(s) with the specified paths.  Default: false
+}
 
+User.find(filter, projection, options);                                             // Find documents that match the given conditions.  Return value: Query
+
+User.find();                                                                        // Find all documents in the collection.  Return value: Query
+User.find({field: value});                                                          // Equality Query Find documents that match the given conditions.  Return value: Query          
+User.find({field1: value1, field2: value2});                                        // Multiple Conditions Find documents that match the given conditions.  Return value: Query
+User.find({field: {$operator: value}});                                             // Query with Operators Find documents that match the given conditions using MongoDB query operators.  Return value: Query                                                  
+User.find({field: {$gt: value}});                                                   // Comparison Query Find documents where the field value is greater than the specified value.  Return value: Query
+User.find({field: {$gte: value}});                                                  // Comparison Query Find documents where the field value is greater than or equal to the specified value.  Return value: Query
+User.find({field: {$lt: value}});                                                   // Comparison Query Find documents where the field value is less than the specified value.  Return value: Query
+User.find({field: {$lte: value}});                                                  // Comparison Query Find documents where the field value is less than or equal to the specified value.  Return value: Query    
+User.find({field: {$gte: value1, $lte: value2}});                                   // Comparison Query Find documents where the field value is between the specified values.  Return value: Query
+User.find({field: {$ne: value}});                                                   // Comparison Query Find documents where the field value is not equal to the specified value.  Return value: Query
+User.find({field: {$in: [value1, value2, ...]}});                                   // Logical Query Find documents where the field value is in the specified array.  Return value: Query
+User.find({field: {$nin: [value1, value2, ...]}});                                  // Logical Query Find documents where the field value is not in the specified array.  Return value: Query
+User.find({field: {$nin: [value1]}, field2: value2});                               // Logical Query Find documents where the field value is not in the specified array and another condition is met.  Return value: Query
+User.find({field: {$exists: true}});                                                // Element Query Find documents where the field exists.  Return value: Query
+User.find({field: {$exists: false}});                                               // Element Query Find documents where the field does not exist.  Return value: Query
+User.find({field: {$type: type}});                                                  // Type Query Find documents where the field is of the specified BSON type.  Return value: Query
+User.find({field: {$regex: /pattern/}});                                            // Regular Expression Query Find documents where the field matches the
+User.find({$or: [{field1: value1}, {field2: value2}]});                             // Logical Query Find documents that match any of the specified conditions.  Return value: Query
+User.find({$nor: [{field1: value1}, {field2: value2}]});                            // Logical Query Find documents that do not match any of the specified conditions.  Return value: Query
+User.find({$and: [{field1: value1}, {field2: value2}]});                            // Logical Query Find documents that match all of the specified conditions.  Return value: Query
+User.find({$not: {field: {$gt: value}}});                                           // Logical Query Find documents where the field does not match the specified condition.  Return value: Query
+
+User.find({}, {field1: 1, field2: 1});                                              // Projection Find documents and include only the specified fields.  Return value: Query
+User.find({}, {field1: 0, field2: 0});                                              // Projection Find documents and exclude the specified fields.  Return value: Query
+
+User.find({}, null, {
+    sort: {field: 1},                                                               // Sort the results by the specified field in ascending order.  Use -1 for descending order.  Return value: Query
+    limit: 10,                                                                      // Limit the number of documents returned.  Return value: Query
+    skip: 20,                                                                       // Skip the specified number of documents before returning results.  Return value: Query
+    select: 'field1 field2',                                                        // Select only the specified fields to return.  Return value: Query
+    lean: true,                                                                     // Return plain JavaScript objects instead of Mongoose documents.  Return value: Query
+    session,                                                                        // Use the given session for the query.  Return value: Query
+    populate: 'field',                                                              // Populate the specified field(s) in the returned documents.  Return value: Query
+    // skip: (page - 1) * limit                                                     // Pagination example: skip the appropriate number of documents based on the page number and limit.  Return value: Query
+})
+
+User.find().select('field1 field2').populate('field').sort({field: 1}).skip(20).limit(10).lean().session(session);      // orde base use Chainable query example: find all documents, sort by a field, skip some documents, limit the number of results, select specific fields, and return plain JavaScript objects.  Return value: Query                                                 
+User.find({field: value}).session(session);                                         // Execute the query using the given session.  Return value: Query
+
+
+User.findOne(filter, projection, options);                                          // Find a single document that matches the given conditions.  Return value: Query
+User.findOne({field: value});                                                       // Find a single document that matches the given conditions.  Return value: Query
+// ... all same as User,find() but returns a single document or null if no match is found.
+
+User.findById(id, projection, options);                                            // Find a single document by its _id field.  Return value: Query
+User.findById(id);                                                                 // Find a single document by its _id field.  Return value: Query
+// ... all same as User.find() but returns a single document or null if no match is found.
 
 
 
